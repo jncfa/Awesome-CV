@@ -5,31 +5,36 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
-    container: thomasweise/texlive
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
 
+      - name: Build docs
+        run: |
+          make 
+          mkdir public
+          cp example/cv.pdf public/cv.pdf
+                    cat > public/index.html <<EOL
+          <!doctype html>
+          <html>
+            <head>
+              <title>José Faria Curriculum Vitae</title>
+            </head>
+            <body>
+              <iframe src="cv.pdf" width="100%" height="100%"> </iframe>
+            </body>
+          </html>
+          EOL
+
       - name: Create public directory to host HTML
         run: mkdir public
 
-      - name: Convert tex to HTML
-        uses: docker://pandoc/latex:2.9
+      - name: Deploy to GitHub Pages
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v2
         with:
-          args: >-  # allows you to break string into multiple lines
-            --standalone
-            --output=public/index.html
-            -f latex
-            examples/cv/education.tex examples/cv/skills.tex examples/cv/experience.tex examples/cv/extracurricular.tex examples/cv/honors.tex examples/cv/presentation.tex examples/cv/writing.tex examples/cv/committees.tex examples/cv.tex    
-      
-      - name: Install rsync
-        run: |
-          apt-get update && apt-get install -y rsync
-
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@4.1.7
-        with:
-          branch: gh-pages # The branch the action should deploy to.
-          folder: public # The folder the action should deploy.
+          target_branch: gh-pages
+          build_dir: public
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
