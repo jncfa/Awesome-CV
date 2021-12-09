@@ -28,9 +28,6 @@ jobs:
           </html>
           EOL
 
-      - name: Create public directory to host HTML
-        run: mkdir public
-
       - name: Deploy to GitHub Pages
         if: success()
         uses: crazy-max/ghaction-github-pages@v2
