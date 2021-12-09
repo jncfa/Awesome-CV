@@ -13,7 +13,7 @@ jobs:
 
       - name: Build docs
         run: |
-          make 
+          make cv.pdf
           mkdir public
           cp example/cv.pdf public/cv.pdf
                     cat > public/index.html <<EOL
