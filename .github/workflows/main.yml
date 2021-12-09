@@ -22,7 +22,7 @@ jobs:
             --standalone
             --output=public/index.html
             -f latex
-            examples/cv.tex   
+            examples/cv.tex  examples/cv/education.tex examples/cv/skills.tex examples/cv/experience.tex examples/cv/extracurricular.tex examples/cv/honors.tex examples/cv/presentation.tex examples/cv/writing.tex examples/cv/committees.tex  
 
       - name: Deploy to GitHub Pages
         if: success()
