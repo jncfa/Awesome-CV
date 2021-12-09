@@ -5,17 +5,30 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     container: thomasweise/texlive
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Compile
-        run: make
+      - name: Create public directory to host HTML
+        run: mkdir public
 
-      - uses: actions/upload-artifact@v2
+      - name: Convert tex to HTML
+        uses: docker://pandoc/latex:2.9
         with:
-          name: examples
-          path: examples/*.pdf
+          args: >-  # allows you to break string into multiple lines
+            --standalone
+            --output=public/index.html
+            -f latex
+            examples/cv.tex   
+
+      - name: Deploy to GitHub Pages
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v2
+        with:
+          target_branch: gh-pages
+          build_dir: public
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
